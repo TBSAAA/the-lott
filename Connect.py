@@ -42,9 +42,9 @@ class Connect(object):
             self.conn.rollback()
             return False
 
-    def execute_many(self, sql, **kwargs):
+    def execute_many(self, sql, args):
         try:
-            self.cursor.executemany(sql, kwargs)
+            self.cursor.executemany(sql, args)
             self.conn.commit()
         except Exception as e:
             print(e)

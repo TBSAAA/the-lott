@@ -10,8 +10,8 @@ headers = {
 }
 data = {
     # "DateStart": "1997-02-01", # TattsLotto 最早日期
-    "DateStart": "2005-09-01", # TattsLotto 最早日期
-    "DateEnd": "2005-10-19",
+    "DateStart": "2005-08-01", # TattsLotto 最早日期
+    "DateEnd": "2005-10-18",
     "ProductFilter": ["OzLotto"],
     "CompanyFilter": ["NSWLotteries"]
 }

@@ -9,14 +9,14 @@ headers = {
     "referer": "https://www.thelott.com/",
 }
 data = {
-    "MinDrawNo": 4100,
-    "MaxDrawNo": 4100,
+    "MinDrawNo": 1,
+    "MaxDrawNo": 1,
     # "Product": "Powerball", # 1 Powerball 最小期数
     # "Product": "OzLotto", # 609 OzLotto 最小期数
     # "Product": "MonWedLotto", # 1638 MonWedLotto 最小期数
     # "Product": "LottoStrike", # 1639 TattsLotto 最小期数
     # "Product": "SetForLife", # 1 LottoStrike 最小期数
-    "Product": "TattsLotto",  # 1639 TattsLotto 最小期数
+    "Product": "SetForLife",  # 1639 TattsLotto 最小期数
     "CompanyFilter": ["NSWLotteries"]
 }
 
