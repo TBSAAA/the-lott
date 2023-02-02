@@ -12,14 +12,16 @@ def get_latest(type):
     }
     data = {
         "CompanyId": "NSWLotteries",
-        'MaxDrawCountPerProduct': '1',
+        'MaxDrawCountPerProduct': '3',
         "OptionalProductFilter": [type]
     }
 
     res = requests.post(url, headers=headers, json=data)
     data_list = res.json()
     res.close()
-    return data_list['DrawResults'][0]['DrawDate'].split('T')[0], data_list['DrawResults'][0]['DrawNumber']
+    return data_list['DrawResults'][0]['DrawDate'].split('T')[0]
+
 
 if __name__ == '__main__':
-    get_latest("Powerball")
+    # get_latest("OzLotto")
+    print(get_latest("SetForLife744"))

@@ -10,11 +10,12 @@ headers = {
 }
 data = {
     # "DateStart": "1997-02-01", # TattsLotto 最早日期
-    "DateStart": "2005-08-01", # TattsLotto 最早日期
-    "DateEnd": "2005-10-18",
-    "ProductFilter": ["OzLotto"],
+    "DateStart": "2021-10-18", # TattsLotto 最早日期
+    "DateEnd": "2021-12-18",
+    "ProductFilter": ["SetForLife744"],
     "CompanyFilter": ["NSWLotteries"]
 }
+
 
 res = requests.post(url, headers=headers, json=data)
 data_list = res.json()
