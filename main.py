@@ -27,11 +27,16 @@ if __name__ == '__main__':
                 print("no need to update, {}".format(task))
                 continue
             start = latest_date + timedelta(days=1)
-            GetLottData(task).get_data(start)
+            lott = GetLottData(task)
+            lott.get_data(start)
+            lott.update_analyze_data()
         else:
             # if database is empty, fill the database with data from start_date
             print("fill database, {}".format(task))
             start = datetime.strptime(start_date[task], '%Y-%m-%d').date()
-            GetLottData(task).get_data(start)
+            lott = GetLottData(task)
+            lott.get_data(start)
+            lott.update_analyze_data()
+
 
 

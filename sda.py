@@ -1,21 +1,13 @@
-from datetime import datetime, timedelta
-import time
+def sadsd():
+    k1 = ['20', '3', '8', '23', '31', '22', '30']
+    k2 = ['20']
+    return k1, k2
 
 
-
-start_date = {
-    "Powerball": "1996-05-23",
-    "OzLotto": "2005-10-18",
-    "MonWedLotto": "1997-12-28",
-    "LottoStrike": "1997-12-31",
-    "SetForLife744": "2020-03-20",
-    "TattsLotto": "2024-02-01",
-}
-
-
-start = datetime.strptime(start_date["SetForLife744"], '%Y-%m-%d').date()
-print(start)
-if str(start) <= "2020-03-22":
-    print("SetForLife")
-else:
-    print("SetForLife744")
+if __name__ == '__main__':
+    k1= sadsd()
+    print(k1)
+    if isinstance(k1, tuple):
+        print("tuple")
+    else:
+        print("not tuple")

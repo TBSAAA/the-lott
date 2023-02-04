@@ -24,4 +24,4 @@ def get_latest(type):
 
 if __name__ == '__main__':
     # get_latest("OzLotto")
-    print(get_latest("SetForLife744"))
+    print(get_latest("TattsLotto"))

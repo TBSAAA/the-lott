@@ -1,49 +1,70 @@
 import Connect
 import random
 import local_settings
+import base64
+import pickle
 
 
 class Analyze(object):
     def __init__(self, task):
         self.task = task
         self.primary_order_list, self.secondary_order_list = self.get_data()
+        self.primary_length = local_settings.rules[self.task][0]["primary"]
+        self. primary_list = []
+        self.secondary_list = []
         print("primary_order_list: {}".format(self.primary_order_list))
         print("secondary_order_list: {}".format(self.secondary_order_list))
-        print(dict(self.primary_order_list))
+        self.follow_stats()
 
     def get_data(self):
         with Connect.Connect() as conn:
-            sql = "select * from {} where Draw_number > {} ORDER BY Draw_number" \
-                .format(self.task, local_settings.condition[self.task])
-            data_list = conn.fetch_all(sql)
-            primary_list = []
-            secondary_list = []
-            for data in data_list:
-                primary_list.append(data["Primary_numbers"].split(','))
-                secondary_list.append(data["Secondary_numbers"].split(','))
-            primary_temp_list = {}
-            secondary_temp_list = {}
+            sql = "select * from AnalyzeData where name = '{}'".format(self.task)
+            data = conn.fetch_one(sql)
+            # decode and base64 decode
+            primary_list_base64 = base64.b64decode(data["primary_order_list"].encode())
+            secondary_list_base64 = base64.b64decode(data["secondary_order_list"].encode())
+            # deserialized data
+            primary_list = pickle.loads(primary_list_base64)
+            secondary_list = pickle.loads(secondary_list_base64)
+            return primary_list, secondary_list
 
-            for i in primary_list:
-                for j in i:
-                    if j in primary_temp_list:
-                        primary_temp_list[j] += 1
-                    else:
-                        primary_temp_list[j] = 1
-
-            for i in secondary_list:
-                for j in i:
-                    if j in secondary_temp_list:
-                        secondary_temp_list[j] += 1
-                    else:
-                        secondary_temp_list[j] = 1
-            primary_order_list = sorted(primary_temp_list.items(), key=lambda x: x[1], reverse=True)
-            secondary_order_list = sorted(secondary_temp_list.items(), key=lambda x: x[1], reverse=True)
-            return primary_order_list, secondary_order_list
-
+    # totally random
     def get_random(self):
-        length = local_settings.rules[self.task][0]["primary"]
-        print("length: {}".format(length))
+        while len( self.primary_list) < self.primary_length:
+            random_number = random.randint(0, len(self.primary_order_list) - 1)
+            if self.primary_order_list[random_number][0] not in self.primary_list:
+                self.primary_list.append(self.primary_order_list[random_number][0])
+
+        if self.task != "Powerball":
+            return self.primary_list
+        random_number = random.randint(0, len(self.secondary_order_list) - 1)
+        self.secondary_list.append(self.secondary_order_list[random_number][0])
+        print("primary_list: {}".format(self.primary_list))
+        print("secondary_list: {}".format(self.secondary_list))
+        return self.primary_list, self.secondary_list
+
+    # follow the stats
+    def follow_stats(self):
+        for i in range(1, self.primary_length+1):
+            self.primary_list.append(self.primary_order_list[-i][0])
+
+        if self.task != "Powerball":
+            return self.primary_list
+        self.secondary_list.append(self.secondary_order_list[-1][0])
+        return self.primary_list, self.secondary_list
+
+    # The first 2-6 digits take 2 digits, and the last 10 digits take the rest.
+    def strategy_1(self):
+        pass
+
+    # The first half takes 2 digits, and the second half takes the rest.
+    def strategy_2(self):
+        pass
+
+    # Randomly take 2 digits and then take the rest from the last 8 digits.
+    def strategy_3(self):
+        pass
+
 
 
 def power_ball(task):
@@ -197,6 +218,6 @@ def set_for_life(task):
 
 if __name__ == '__main__':
     # Analyze("SetForLife744")
-    # Analyze("Powerball")
+    Analyze("Powerball")
     # Analyze("TattsLotto")
-    Analyze("LottoStrike")
+    # Analyze("LottoStrike")

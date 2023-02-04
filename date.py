@@ -8,19 +8,21 @@ headers = {
     "origin": "https://www.thelott.com",
     "referer": "https://www.thelott.com/",
 }
+
 data = {
     # "DateStart": "1997-02-01", # TattsLotto 最早日期
-    "DateStart": "2021-10-18", # TattsLotto 最早日期
-    "DateEnd": "2021-12-18",
-    "ProductFilter": ["SetForLife744"],
+    "DateStart": "2019-10-18", # TattsLotto 最早日期
+    "DateEnd": "2019-10-18",
+    "ProductFilter": ["OzLotto"],
     "CompanyFilter": ["NSWLotteries"]
 }
 
+print(data)
 
-res = requests.post(url, headers=headers, json=data)
-data_list = res.json()
-res.close()
-print(data_list)
+# res = requests.post(url, headers=headers, json=data)
+# data_list = res.json()
+# res.close()
+# print(data_list)
 # print(res.text)
 # draw_list = []
 # for data in data_list['Draws']:
