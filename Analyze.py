@@ -1,12 +1,49 @@
 import Connect
 import random
+import local_settings
 
 
-def analy(task):
-    if task == "Powerball":
-        power_ball(task)
-    elif task == "SetForLife744":
-        set_for_life(task)
+class Analyze(object):
+    def __init__(self, task):
+        self.task = task
+        self.primary_order_list, self.secondary_order_list = self.get_data()
+        print("primary_order_list: {}".format(self.primary_order_list))
+        print("secondary_order_list: {}".format(self.secondary_order_list))
+        print(dict(self.primary_order_list))
+
+    def get_data(self):
+        with Connect.Connect() as conn:
+            sql = "select * from {} where Draw_number > {} ORDER BY Draw_number" \
+                .format(self.task, local_settings.condition[self.task])
+            data_list = conn.fetch_all(sql)
+            primary_list = []
+            secondary_list = []
+            for data in data_list:
+                primary_list.append(data["Primary_numbers"].split(','))
+                secondary_list.append(data["Secondary_numbers"].split(','))
+            primary_temp_list = {}
+            secondary_temp_list = {}
+
+            for i in primary_list:
+                for j in i:
+                    if j in primary_temp_list:
+                        primary_temp_list[j] += 1
+                    else:
+                        primary_temp_list[j] = 1
+
+            for i in secondary_list:
+                for j in i:
+                    if j in secondary_temp_list:
+                        secondary_temp_list[j] += 1
+                    else:
+                        secondary_temp_list[j] = 1
+            primary_order_list = sorted(primary_temp_list.items(), key=lambda x: x[1], reverse=True)
+            secondary_order_list = sorted(secondary_temp_list.items(), key=lambda x: x[1], reverse=True)
+            return primary_order_list, secondary_order_list
+
+    def get_random(self):
+        length = local_settings.rules[self.task][0]["primary"]
+        print("length: {}".format(length))
 
 
 def power_ball(task):
@@ -116,7 +153,6 @@ def set_for_life(task):
                     item_p[j] = 1
                     item_total[j] = 1
 
-
         for i in analy_s_list:
             for j in i:
                 if j in item_total:
@@ -128,7 +164,8 @@ def set_for_life(task):
         total_list = sorted(item_total.items(), key=lambda x: x[1], reverse=True)
         print(primary_list)
         print(total_list)
-        print("---------------------------------------------------------------------------------------------------------")
+        print(
+            "---------------------------------------------------------------------------------------------------------")
 
         # 最后14位选7
         print("最后14位随机选7")
@@ -158,6 +195,8 @@ def set_for_life(task):
         print(sui_primary)
 
 
-
 if __name__ == '__main__':
-    analy("Powerball")
+    # Analyze("SetForLife744")
+    # Analyze("Powerball")
+    # Analyze("TattsLotto")
+    Analyze("LottoStrike")

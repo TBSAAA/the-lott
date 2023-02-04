@@ -4,8 +4,7 @@ import random
 
 import requests
 import Connect
-from send_wechat_message import send_message
-from local_settings import start_date, daily_tasks
+import local_settings
 
 
 class GetLottData(object):
@@ -72,3 +71,71 @@ class GetLottData(object):
             }
             print("start_date: {}, end_date: {}".format(start_date, end_date))
             self.send_request()
+
+    def update_analyze_data(self):
+        with Connect.Connect() as conn:
+            sql = "select * from {} where Draw_number > {} ORDER BY Draw_number" \
+                .format(self.type, local_settings.condition[self.type])
+            data_list = conn.fetch_all(sql)
+            primary_list = []
+            secondary_list = []
+            for data in data_list:
+                primary_list.append(data["Primary_numbers"].split(','))
+                secondary_list.append(data["Secondary_numbers"].split(','))
+            primary_temp_list = {}
+            secondary_temp_list = {}
+
+            for i in primary_list:
+                for j in i:
+                    if j in primary_temp_list:
+                        primary_temp_list[j] += 1
+                    else:
+                        primary_temp_list[j] = 1
+
+            for i in secondary_list:
+                for j in i:
+                    if j in secondary_temp_list:
+                        secondary_temp_list[j] += 1
+                    else:
+                        secondary_temp_list[j] = 1
+
+            primary_order_list = sorted(primary_temp_list.items(), key=lambda x: x[1], reverse=True)
+            secondary_order_list = sorted(secondary_temp_list.items(), key=lambda x: x[1], reverse=True)
+
+            # sql = "UPDATE AnalyzeData SET primary_order_list = {}, secondary_order_list = {} WHERE name = {}".format(
+            #     1, 2, self.type)
+            sql = "UPDATE AnalyzeData SET primary_order_list = {}, secondary_order_list = {}".format(
+                primary_order_list, secondary_order_list)
+            print(sql)
+            # primary_order_list: [('22', 210), ('1', 208), ('5', 201), ('11', 199), ('7', 199), ('40', 197), ('39', 196),
+            #                      ('24', 196), ('18', 196), ('12', 194), ('42', 194), ('6', 191), ('32', 189),
+            #                      ('16', 188), ('38', 188), ('33', 188), ('26', 187), ('21', 187), ('25', 184),
+            #                      ('37', 184), ('8', 183), ('41', 182), ('3', 181), ('15', 180), ('10', 180),
+            #                      ('31', 180), ('23', 179), ('27', 178), ('36', 178), ('17', 178), ('34', 177),
+            #                      ('29', 176), ('20', 176), ('19', 176), ('45', 175), ('13', 172), ('9', 171),
+            #                      ('30', 168), ('43', 161), ('4', 160), ('35', 158), ('28', 158), ('2', 154),
+            #                      ('14', 144), ('44', 141)]
+            # secondary_order_list: [('2', 73), ('6', 73), ('4', 71), ('11', 70), ('15', 70), ('23', 68), ('33', 66),
+            #                        ('36', 66), ('8', 65), ('28', 65), ('35', 64), ('14', 64), ('41', 63), ('10', 63),
+            #                        ('34', 63), ('1', 63), ('22', 62), ('38', 62), ('43', 61), ('9', 61), ('32', 61),
+            #                        ('7', 61), ('26', 60), ('29', 60), ('13', 59), ('16', 59), ('5', 59), ('40', 58),
+            #                        ('17', 58), ('21', 57), ('18', 57), ('20', 57), ('45', 56), ('44', 55), ('42', 55),
+            #                        ('27', 55), ('24', 54), ('25', 54), ('30', 54), ('19', 53), ('12', 53), ('37', 53),
+            #                        ('39', 53), ('3', 52), ('31', 48)]
+
+            conn.execute(sql)
+
+            # primary_order_list: [('39', 358), ('24', 355), ('42', 353), ('20', 353), ('13', 350), ('11', 349),
+            #                      ('10', 345), ('22', 341), ('41', 340), ('38', 337), ('21', 336), ('17', 335),
+            #                      ('23', 334), ('29', 332), ('6', 331), ('1', 329), ('32', 328), ('7', 324), ('2', 323),
+            #                      ('4', 321), ('31', 320), ('14', 319), ('40', 315), ('16', 315), ('35', 315),
+            #                      ('44', 314), ('12', 313), ('30', 311), ('8', 309), ('18', 309), ('3', 308),
+            #                      ('34', 308), ('19', 306), ('9', 305), ('5', 305), ('36', 303), ('43', 303),
+            #                      ('26', 302), ('25', 302), ('33', 301), ('28', 300), ('27', 297), ('37', 290),
+            #                      ('15', 280), ('45', 272)]
+
+if __name__ == '__main__':
+    GetLottData("TattsLotto").update_analyze_data()
+
+
+
