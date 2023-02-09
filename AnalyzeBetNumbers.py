@@ -5,16 +5,18 @@ import base64
 import pickle
 
 
-class Analyze(object):
+class AnalyzeBetNumbers(object):
     def __init__(self, task):
         self.task = task
         self.primary_order_list, self.secondary_order_list = self.get_data()
         self.primary_length = local_settings.rules[self.task][0]["primary"]
-        self. primary_list = []
+        self.primary_list = []
         self.secondary_list = []
-        print("primary_order_list: {}".format(self.primary_order_list))
-        print("secondary_order_list: {}".format(self.secondary_order_list))
-        self.follow_stats()
+        # print("primary_order_list: {}".format(self.primary_order_list))
+        # print("secondary_order_list: {}".format(self.secondary_order_list))
+        # self.follow_stats_2()
+        # print("primary_list: {}".format(self.primary_list))
+        # print("secondary_list: {}".format(self.secondary_list))
 
     def get_data(self):
         with Connect.Connect() as conn:
@@ -30,7 +32,7 @@ class Analyze(object):
 
     # totally random
     def get_random(self):
-        while len( self.primary_list) < self.primary_length:
+        while len(self.primary_list) < self.primary_length:
             random_number = random.randint(0, len(self.primary_order_list) - 1)
             if self.primary_order_list[random_number][0] not in self.primary_list:
                 self.primary_list.append(self.primary_order_list[random_number][0])
@@ -43,14 +45,24 @@ class Analyze(object):
         print("secondary_list: {}".format(self.secondary_list))
         return self.primary_list, self.secondary_list
 
-    # follow the stats
-    def follow_stats(self):
-        for i in range(1, self.primary_length+1):
+    # follow the stats, only buy cold numbers
+    def follow_stats_1(self):
+        for i in range(1, self.primary_length + 1):
             self.primary_list.append(self.primary_order_list[-i][0])
 
         if self.task != "Powerball":
             return self.primary_list
         self.secondary_list.append(self.secondary_order_list[-1][0])
+        return self.primary_list, self.secondary_list
+
+    # follow the stats, only buy hot numbers
+    def follow_stats_2(self):
+        for i in range(0, self.primary_length):
+            self.primary_list.append(self.primary_order_list[i][0])
+
+        if self.task != "Powerball":
+            return self.primary_list
+        self.secondary_list.append(self.secondary_order_list[0][0])
         return self.primary_list, self.secondary_list
 
     # The first 2-6 digits take 2 digits, and the last 10 digits take the rest.
@@ -64,7 +76,6 @@ class Analyze(object):
     # Randomly take 2 digits and then take the rest from the last 8 digits.
     def strategy_3(self):
         pass
-
 
 
 def power_ball(task):
@@ -218,6 +229,72 @@ def set_for_life(task):
 
 if __name__ == '__main__':
     # Analyze("SetForLife744")
-    Analyze("Powerball")
+    t = AnalyzeBetNumbers("OzLotto")
     # Analyze("TattsLotto")
     # Analyze("LottoStrike")
+    # primary_dict = {}
+    # for i in t.primary_list:
+    #     primary_dict[i[0]] = i[1]
+    #     print(i[0], i[1])
+    #
+    # print(primary_dict)
+    #
+
+    primary_dict = dict(t.primary_order_list)
+    secondary_dict = dict(t.secondary_order_list)
+    print("primary_dict = ", primary_dict)
+    print("secondary_dict = ", secondary_dict)
+
+    for i in secondary_dict:
+        if i in primary_dict:
+            primary_dict[i] += secondary_dict[i]
+        else:
+            primary_dict[i] = secondary_dict[i]
+    print("primary_dict = ", primary_dict)
+
+    primary_order_list = sorted(primary_dict.items(), key=lambda x: x[1], reverse=True)
+    print("primary_order_list = ", primary_order_list)
+
+    f = []
+    while len(f) < 7:
+        random_number = random.randint(1, 46)
+        if primary_order_list[random_number][0] not in f:
+            f.append(primary_order_list[random_number][0])
+
+    print(f)
+
+    f2 = []
+    while len(f2) < 7:
+        random_number = random.randint(30, 46)
+        if primary_order_list[random_number][0] not in f2:
+            f2.append(primary_order_list[random_number][0])
+
+    print(f2)
+
+    f3 = []
+
+    while len(f3) < 3:
+        random_number = random.randint(1, 20)
+        if primary_order_list[random_number][0] not in f3:
+            f3.append(primary_order_list[random_number][0])
+
+    while len(f3) < 7:
+        random_number = random.randint(20, 46)
+        if primary_order_list[random_number][0] not in f3:
+            f3.append(primary_order_list[random_number][0])
+
+    print(f3)
+
+    f4 = []
+
+    while len(f4) < 2:
+        random_number = random.randint(1, 20)
+        if primary_order_list[random_number][0] not in f4:
+            f4.append(primary_order_list[random_number][0])
+
+    while len(f4) < 7:
+        random_number = random.randint(20, 47)
+        if primary_order_list[random_number][0] not in f4:
+            f4.append(primary_order_list[random_number][0])
+
+    print(f4)
